@@ -1,0 +1,23 @@
+# Local PostgreSQL for ControlIQ. Credentials are for local demonstration only.
+# The backend and frontend run on the host (see README.md).
+services:
+  postgres:
+    image: postgres:16
+    container_name: controliq-postgres
+    environment:
+      POSTGRES_USER: controliq
+      POSTGRES_PASSWORD: controliq
+      POSTGRES_DB: controliq
+    ports:
+      - "5432:5432"
+    volumes:
+      - controliq-pgdata:/var/lib/postgresql/data
+      - ./scripts/docker/init-test-db.sql:/docker-entrypoint-initdb.d/10-init-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U controliq -d controliq"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  controliq-pgdata:
